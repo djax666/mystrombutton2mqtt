@@ -28,8 +28,8 @@ You find this address on the purchase box or in myStrom application.
 ![MAC address on a box](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_box.jpg) or 
 ![MAC address in the app.](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_android.jpg)
 
-Identify the IP address of your wifi button. it will be known as __BUTTON_IP__
-Identify the IP address of this GATEWAY. It will be known as __GATEWAY_IP__
+Identify the IP address of your wifi button. it will be known as __BUTTON_IP__ .
+Identify the IP address of this GATEWAY. It will be known as __GATEWAY_IP__ .
 Note that the port 8321 is the default port of the GATEWAY and can be modified in the settings files.
 The following command will erase the previous actions of the button (single , double , long click and touch) and replace them by a generic action.
 Run the command :
