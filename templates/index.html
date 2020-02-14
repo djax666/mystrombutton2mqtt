@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>myStromButton2MQTT Gateway</title>
+		<link rel="stylesheet" type="text/css" href="/static/style.css" />	
+	</head>
+	<body>
+		<h1>Welcome to the MyStrom Wifi Button 2 HTTP Gateway!</h1>
+		<h2>Intro</h2>
+		<p>Home Assistant has some support for myStrom products. But I couldn't get functioning the buttons, I get a 401 error. I tried different options :
+<pre>
+	auth_providers:	
+	- type: trusted_networks
+      trusted_networks:
+        - 192.168.10.0/21
+        - 172.0.0.0/24
+        - fd00::/8
+    - type: legacy_api_password
+	  api_password: !secret api_password
+http:
+binary_sensor:
+  - mystrom
+</pre>
+	  but it doesn't work and the legacy_api_password will be deprecated.</p>
+		<h2> Preparation of the button</h2>
+		
+		<p> You need to have a mystrom wifi button with the minimal Firmware version: 2.74.10.</p>
+		<p>Please note the MAC address of your button. (only the numbers or letters). It will be know as <span class="red">[BUTTON MAC]</span><br/>
+		You find this address on the purchase box or in myStrom application.</p>
+	<div><img src="/static/macaddress_box.jpg" title="macaddress on a box."/> or <img src="/static/macaddress_android.jpg" title="macaddress on the app."/> </div>
+		<p>Identify the IP address of your wifi button. it will be known as <span class="red">[BUTTON IP]</span><br/>
+		
+		Identify the IP address of this GATEWAY. It will be known as <span class="red">[GATEWAY IP]</span><br/>
+		Note that the port 8321 is the default port of the GATEWAY and can be modified in the settings files.<br/>
+		The following command will erase the previous actions of the button (single , double , long click and touch) and replace them by a generic action.<br>
+		Run the command :</p>
+		<pre>curl -v -d "generic=get://<span class="red">[GATEWAY IP]</span>:8321/api/mystrom/gen&single=&double=&long=&touch=" http://<span class="red">[BUTTON IP]</span>/api/v1/device/<span class="red">[BUTTON MAC]</span></pre>
+		<p>For the myStrom Wifi Button, the button has to be plugged to a charger and press to communicate with your Wifi.<br>
+		For the myStrom Wifi Button +, you should remove the batteries and insert them again.</p>
+		<h2>Update the resources/settings.json</h2>
+		<p>Please add the <span class="red">[MAC BUTTON]</span> and a short uniq name of your choise <span class="red">[CHOOSEN NAME]</span> in the section "button" or "buttons+" of the file <i>resources/settings.json</i><br/>
+		Start the daemon with the command:</p>
+		<pre>python3 mystrombutton2mqtt.py ./resources/settings.json</pre>
+		<p>Once the gateway started, Home Assistant (with the option "discovery:" in configuration.yaml and the same MQTT broker as the gateway ) 
+		will show the button(s) in "Configuration" > "Device"  as "Wifi Button [CHOOSEN NAME]" with MQTT in the integration column and "myStrom AG" as the manufacturer</p>		
+	</body>
+</html>
