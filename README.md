@@ -29,15 +29,20 @@ You find this address on the purchase box or in myStrom application.
 ![MAC address in the app.](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_android.jpg)
 
 Identify the IP address of your wifi button. it will be known as __BUTTON_IP__ .
+
 Identify the IP address of this GATEWAY. It will be known as __GATEWAY_IP__ .
+
 Note that the port 8321 is the default port of the GATEWAY and can be modified in the settings files.
+
 The following command will erase the previous actions of the button (single , double , long click and touch) and replace them by a generic action.
+
 Run the command :
 ``` bash
 curl -v -d "generic=get://GATEWAY_IP:8321/api/mystrom/gen&single=&double=&long=&touch=" http://BUTTON_IP/api/v1/device/BUTTON_MAC
 ```
 
 For the myStrom Wifi Button, the button has to be plugged to a charger and press to communicate with your Wifi.
+
 For the myStrom Wifi Button +, you should remove the batteries and insert them again.
 
 ## Update and rename the resources/settings.json.sample in settings.json
