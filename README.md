@@ -44,7 +44,7 @@ For the myStrom Wifi Button +, you should remove the batteries and insert them a
 
 Please add the __MAC_BUTTON__ and a short uniq name of your choice __CHOOSEN_NAME__ in the section "button" or "buttons+" of the file resources/settings.json
 
-
+## Running
 
 Start the daemon with the command:
 ``` bash
