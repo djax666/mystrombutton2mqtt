@@ -1,8 +1,8 @@
-# mystrombutton2mqtt : A gateway for myStrom Wifi Button to MQTT for Home Assistant integration
+# mystrombutton2mqtt : a gateway from myStrom Wifi Button to MQTT for Home Assistant integration
 
 ## Intro
 
-Home Assistant has some support for myStrom products. But I couldn't get functioning the buttons, I get a 401 error. I tried different options :
+Home Assistant has some support for myStrom products. But I couldn't get functioning the buttons, I get a 401 error. I tried different combinations :
 ``` yaml
 homeassistant:
     - type: trusted_networks
@@ -17,24 +17,28 @@ http:
 binary_sensor:
   - mystrom
 ```
-but it doesn't work and the [legacy_api_password](https://www.home-assistant.io/docs/authentication/providers/#legacy-api-password) will be deprecated.
+but it doesn't work and the [legacy_api_password](https://www.home-assistant.io/docs/authentication/providers/#legacy-api-password) is deprecated and will dropped in a future release.
+
+So I decided to create this gateway.
 
 ## Preparation of the button
 
-You need to have a mystrom wifi button with the minimal Firmware version: 2.74.10.
+You need to have a myStrom Wifi button with the minimal Firmware version: 2.74.10.
 
 Please note the MAC address of your button. (only the numbers or letters). It will be know as __BUTTON_MAC__
 You find this address on the purchase box or in myStrom application.
 ![MAC address on a box](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_box.jpg) or 
 ![MAC address in the app.](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_android.jpg)
 
-Identify the IP address of your wifi button. it will be known as __BUTTON_IP__ .
+Identify the IP address of your wifi button. It will be known as __BUTTON_IP__ .
 
 Identify the IP address of this GATEWAY. It will be known as __GATEWAY_IP__ .
 
-Note that the port 8321 is the default port of the GATEWAY and can be modified in the settings files.
+Note that the port __8321__ is the default port of the gateway and can be modified in the settings.json file.
 
 The following command will erase the previous actions of the button (single , double , long click and touch) and replace them by a generic action.
+
+The actions created in the app seem to be working independently. 
 
 Run the command :
 ``` bash
@@ -45,9 +49,11 @@ For the myStrom Wifi Button, the button has to be plugged to a charger and press
 
 For the myStrom Wifi Button +, you should remove the batteries and insert them again.
 
-## Update and rename the resources/settings.json.sample in settings.json
+## Setting of the gateway
 
-Please add the __MAC_BUTTON__ and a short uniq name of your choice __CHOOSEN_NAME__ in the section "button" or "buttons+" of the file resources/settings.json
+Update and rename the "resources/settings.json.sample" into "resources/settings.json"
+
+Please add the __MAC_BUTTON__ and a short uniq name of your choice __CHOOSEN_NAME__ in the section "button" or "buttons+" of the file "resources/settings.json". Personnally I have chosen the color of the rubber band as __CHOOSEN_NAME__.
 
 ## Running
 
@@ -61,4 +67,4 @@ Once the gateway started, Home Assistant (with the option "discovery:" in config
 
 The battery information will be updated after each button action or every 12 hours when the button does a hearbeat.
 
-Note that I don't have a Button Plus, so I didn't test it. it is base on the doc found on [myStrom API](https://api.mystrom.ch/?version=latest).
+Note that I don't have a Button Plus, so I didn't test it. It is based on the API doc found on [myStrom](https://api.mystrom.ch/?version=latest).
