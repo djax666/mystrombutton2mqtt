@@ -58,3 +58,7 @@ python3 mystrombutton2mqtt.py ./resources/settings.json
 Once the gateway started, Home Assistant (with the option "discovery:" in configuration.yaml and the same MQTT broker as the gateway ) will show the button(s) in "Configuration" > "Device" as "Wifi Button __CHOOSEN_NAME__" with MQTT in the integration column and "myStrom AG" as the manufacturer
 
 ![Wifi Buttons in Devices](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/devices.png)
+
+The battery information will be updated after each button action or every 12 hours when the button does a hearbeat.
+
+Note that I don't have a Button Plus, so I didn't test it. it is base on the doc found on [myStrom API](https://api.mystrom.ch/?version=latest).
