@@ -20,7 +20,7 @@ binary_sensor:
 but it doesn't work and the [legacy_api_password](https://www.home-assistant.io/docs/authentication/providers/#legacy-api-password) is deprecated and will dropped in a future release.
 
 So I decided to create this gateway.
-
+![Schema](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/schema.png)
 ## Preparation of the button
 
 You need to have a myStrom Wifi button with the minimal Firmware version: 2.74.10.
