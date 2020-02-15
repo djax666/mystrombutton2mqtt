@@ -1,4 +1,4 @@
-# mystrombutton2mqtt : a gateway from myStrom Wifi Button to MQTT for Home Assistant integration
+# mystrombutton2mqtt : a gateway between myStrom Wifi Button and MQTT gateway for Home Assistant integration ![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/mystrombutton2mqtt_100.png "Logo") 
 
 ## Intro
 
@@ -20,7 +20,7 @@ binary_sensor:
 but it doesn't work and the [legacy_api_password](https://www.home-assistant.io/docs/authentication/providers/#legacy-api-password) is deprecated and will be dropped in a future release.
 
 So I decided to create this gateway.
-![Schema](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/schema.png)
+![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/schema.png "Functional Schema")
 
 The goal is to have binary_sensors for single, double, long, _touch_, _wheel_final_ event and sensors for battery level and _wheel event_ (_italic_ only available for Button Plus) automatically created in Devices of Home Assistant. So Home Assistant can suggest Automations.
 
@@ -30,8 +30,8 @@ You need to have a myStrom Wifi button with the minimal Firmware version: 2.74.1
 
 Please note the MAC address of your button. (only the numbers or letters). It will be know as __\[BUTTON_MAC\]__
 You find this address on the purchase box or in myStrom application.
-![MAC address on a box](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_box.jpg) or 
-![MAC address in the app.](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_android.jpg)
+![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_box.jpg "MAC address on the box") or 
+![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_android.jpg "MAC address in Android App")
 
 
 
@@ -97,7 +97,7 @@ myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/wheel_final
 ### On Home Assistant
 Once the gateway started, Home Assistant (with the option "discovery:" in configuration.yaml and the same MQTT broker as the gateway ) will show the button(s) in "Configuration" > "Device" as "Wifi Button __\[CHOOSEN_NAME\]__" with "MQTT" in the integration column and "myStrom AG" as the manufacturer
 
-![Wifi Buttons in Devices](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/devices.png)
+![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/devices.png "Wifi Buttons in Devices")
 
 The battery information will be updated after each button action or every 12 hours when the button does a heartbeat.
 
