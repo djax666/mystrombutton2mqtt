@@ -102,7 +102,7 @@ Once the gateway started, Home Assistant (with the option "discovery:" in config
 The battery information will be updated after each button action or every 12 hours when the button does a heartbeat.
 
 ## mystrombutton2mqtt as a service
-If you run the gateway on a raspberry pi, you may want to run is as a service. To do so, create a file:
+If you run the gateway on a raspberry pi, you may want to run it as a service. To do so, create a file:
 ```console
 sudo vi  /lib/systemd/system/mystrombutton2mqtt.service
 ```
