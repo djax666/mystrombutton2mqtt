@@ -2,7 +2,7 @@
 
 ## Intro
 
-Home Assistant has some support for myStrom products. But I couldn't get functioning the buttons, I get a 401 error. I tried different combinations :
+Home Assistant has some [support](https://www.home-assistant.io/integrations/mystrom#binary-sensor) for myStrom products. But I couldn't get functioning the buttons, I get a 401 error. I tried different combinations :
 ``` yaml
 homeassistant:
     - type: trusted_networks
@@ -15,12 +15,15 @@ homeassistant:
     api_password: !secret api_password
 http:
 binary_sensor:
-  - mystrom
+  - platform: mystrom
 ```
 but it doesn't work and the [legacy_api_password](https://www.home-assistant.io/docs/authentication/providers/#legacy-api-password) is deprecated and will dropped in a future release.
 
 So I decided to create this gateway.
 ![Schema](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/schema.png)
+
+The goal is to have binary_sensors for single, double, long, _touch_, _wheel_final_ event and sensors for battery level and _wheel event_ (_italic_ only available for Button Plus) automatically created in Devices of Home Assistant. So Home Assistant can suggest Automations.
+
 ## Preparation of the button
 
 You need to have a myStrom Wifi button with the minimal Firmware version: 2.74.10.
@@ -29,6 +32,8 @@ Please note the MAC address of your button. (only the numbers or letters). It wi
 You find this address on the purchase box or in myStrom application.
 ![MAC address on a box](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_box.jpg) or 
 ![MAC address in the app.](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_android.jpg)
+
+
 
 Identify the IP address of your wifi button. It will be known as __BUTTON_IP__ .
 
@@ -65,6 +70,6 @@ Once the gateway started, Home Assistant (with the option "discovery:" in config
 
 ![Wifi Buttons in Devices](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/devices.png)
 
-The battery information will be updated after each button action or every 12 hours when the button does a hearbeat.
+The battery information will be updated after each button action or every 12 hours when the button does a heartbeat.
 
-Note that I don't have a Button Plus, so I didn't test it. It is based on the API doc found on [myStrom](https://api.mystrom.ch/?version=latest).
+Note that I don't have a "Button Plus", so I didn't test it. It is based on the API doc found on [myStrom](https://api.mystrom.ch/?version=latest).
