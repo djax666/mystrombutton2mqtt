@@ -1,4 +1,5 @@
-# mystrombutton2mqtt : a gateway between myStrom Wifi Button and MQTT gateway for Home Assistant integration ![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/mystrombutton2mqtt_100.png "Logo") 
+![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/mystrombutton2mqtt_title.png "Logo") 
+# a gateway between myStrom Wifi Button and MQTT gateway for Home Assistant integration 
 
 ## Intro
 
