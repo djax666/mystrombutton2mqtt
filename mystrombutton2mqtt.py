@@ -15,7 +15,6 @@ VALID_EVENTS = set()
 MACS = dict()
 ACTIONS = dict()
 TYPES = dict()
-#MASTER_TOPICS = dict()
 
 SUBSCRIBED_TOPICS = dict()
 
@@ -89,9 +88,11 @@ def gen():
     print("battery: "+ battery)
     topik = "myStrom/wifi_buttons/"+item+"_"+mac+"/"+event
     #print ("topic: " + topik)
-    conn.publish(topik, msg)
     if action != 6:
-        conn.publish( "myStrom/wifi_buttons/"+item+"_"+mac+"/battery",battery )    
+        con.publish(topik,msg,False)
+        conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery",payload=battery,remain=True )
+    else:
+        conn.publish(topik,msg,True)
     print("################### END ################### ") 
     return "Ok"
     
@@ -119,7 +120,7 @@ def publish_discovery_sensor(mac,item,action_name,default_action_value,model,uni
         "value_template":"{{ value  | upper }}"\
         }'
     #Configuration topic: 
-    conn.publish( "homeassistant/sensor/"+mac+"_"+action_name+"/config",msg_json)
+    conn.publish( topic="homeassistant/sensor/"+mac+"_"+action_name+"/config",payload=msg_json,remain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name , default_action_value )
 
@@ -151,7 +152,7 @@ def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,m
         "off_delay": 1 \
         }'
     #Configuration topic: 
-    conn.publish( "homeassistant/binary_sensor/"+mac+"_"+action_name+"/config",msg_json)
+    conn.publish( topic="homeassistant/binary_sensor/"+mac+"_"+action_name+"/config",payload=msg_json,remain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name, default_action_value)
     
@@ -161,15 +162,12 @@ def publish_discovery_button_plus( mac,item):
     publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap")
     publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync")
     publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="",model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
-    #publish_discovery_sensor(mac,item,action_name,default_action_value,model       ,unit_of_measurement,device_class):
 
 def publish_discovery_button( mac,item,model):
     publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank")
     publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double")
     publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked")
     publish_discovery_sensor(mac=mac,item=item,action_name="battery", default_action_value="",model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60")
-    
-
 
 def publish_discovery():
     for mac in TYPES:
