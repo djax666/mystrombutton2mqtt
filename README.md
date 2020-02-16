@@ -55,6 +55,40 @@ For the myStrom Wifi Button, the button has to be plugged to a charger and press
 
 For the myStrom Wifi Button +, you should remove the batteries and insert them again.
 
+A positive setup should look like that:
+```console
+*   Trying [BUTTON_IP]...
+* TCP_NODELAY set
+* Connected to [BUTTON_IP] ([BUTTON_IP]) port 80 (#0)
+> POST /api/v1/device/[BUTTON_MAC] HTTP/1.1
+> Host: [BUTTON_IP]
+> User-Agent: curl/7.52.1
+> Accept: */*
+> Content-Length: 77
+> Content-Type: application/x-www-form-urlencoded
+>
+* upload completely sent off: 77 out of 77 bytes
+< HTTP/1.1 200 OK
+< Pragma: no-cache
+< Cache-Control: no-store, no-cache
+< Access-Control-Allow-Origin: *
+< Content-Type: application/json
+< Content-Length: 126
+< Connection: close
+<
+{
+        "single": "",
+        "double": "",
+        "long": "",
+        "touch": "",
+        "generic": "get:\/\/[GATEWAY_IP]:8321\/api\/mystrom\/gen"
+* Curl_http_done: called premature == 0
+* Closing connection 0
+
+```
+The "\\/" in the generic URL are normal.
+
+
 ## Setting of the gateway
 
 Update and rename the "resources/settings.json.sample" into "resources/settings.json"
