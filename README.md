@@ -96,7 +96,13 @@ myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/wheel_final
 ```
 
 ### On Home Assistant
-Once the gateway started, Home Assistant (with the option "discovery:" in configuration.yaml and the same MQTT broker as the gateway ) will show the button(s) in "Configuration" > "Device" as "Wifi Button __\[CHOOSEN_NAME\]__" with "MQTT" in the integration column and "myStrom AG" as the manufacturer
+On Home Assistant, you should have the same __\[MQTT_BROKER_IP\]__ in your "configuration.yaml":
+```yaml
+mqtt:
+  broker: [MQTT_BROKER_IP]
+  discovery: true
+```
+Once the gateway started, Home Assistant will show the button(s) in "Configuration" > "Devices" as "Wifi Button __\[CHOOSEN_NAME\]__" with "MQTT" in the integration column and "myStrom AG" as the manufacturer
 
 ![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/devices.png "Wifi Buttons in Devices")
 
