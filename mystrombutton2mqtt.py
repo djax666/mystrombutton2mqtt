@@ -73,7 +73,7 @@ def gen():
 
     print ("event: "+ event)
 
-    if action == 5 and 'wheel' in request.args:
+    if action == "5" and 'wheel' in request.args:
        msg = request.args['wheel']
     print ("msg: "+msg)
 
@@ -88,7 +88,7 @@ def gen():
     print("battery: "+ battery)
     topik = "myStrom/wifi_buttons/"+item+"_"+mac+"/"+event
     #print ("topic: " + topik)
-    if action != 6:
+    if action != "6":
         con.publish(topik,msg,False)
         conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery",payload=battery,remain=True )
     else:
@@ -161,7 +161,7 @@ def publish_discovery_button_plus( mac,item):
     publish_discovery_button( mac,item,"Button Plus")
     publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap")
     publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync")
-    publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="",model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
+    publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="0",model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
 
 def publish_discovery_button( mac,item,model):
     publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank")
