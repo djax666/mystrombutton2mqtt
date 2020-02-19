@@ -34,6 +34,10 @@ You find this address on the purchase box or in myStrom application.
 ![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_box.jpg "MAC address on the box") or 
 ![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_android.jpg "MAC address in Android App")
 
+On a Button Plus, the MAC address is written on the bottom:
+![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/mac_on_button_plus.jpg "MAC address on the bottom")
+
+
 
 
 Identify the IP address of your wifi button. It will be known as __\[BUTTON_IP\]__ .
@@ -179,4 +183,8 @@ Check if it's active:
 sudo systemctl status mystrombutton2mqtt.serviceca
 ```
 ## Postscritum
-Note that I don't have a "Button Plus", so I didn't test it. It is based on the API doc found on [myStrom](https://api.mystrom.ch/?version=latest).
+You can find the the API doc here: [https://api.mystrom.ch/?version=latest](https://api.mystrom.ch/?version=latest)
+
+This gateway has been tested with:
+* PQWBB1 (Button light) 
+* AYWPB1 (Button Plus)
