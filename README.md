@@ -35,6 +35,7 @@ You find this address on the purchase box or in myStrom application.
 ![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/macaddress_android.jpg "MAC address in Android App")
 
 On a Button Plus, the MAC address is written on the bottom:
+
 ![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/mac_on_button_plus.jpg "MAC address on the bottom")
 
 
