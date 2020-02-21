@@ -13,6 +13,9 @@ VALID_USERS = dict()
 VALID_TOPICS = set()
 VALID_EVENTS = set()
 MACS = dict()
+LEVEL = dict()
+LEVEL_MIN = dict()
+LEVEL_MAX = dict()
 ACTIONS = dict()
 TYPES = dict()
 
@@ -63,7 +66,7 @@ def gen():
 
 
     event=None
-    msg = 'ON'
+    msg = ''
     mac= request.args['mac']
     print ("mac: "+ mac)
     action= request.args['action']
@@ -74,7 +77,10 @@ def gen():
     print ("event: "+ event)
 
     if action == "5" and 'wheel' in request.args:
-       msg = request.args['wheel']
+        msg = request.args['wheel']
+    else:
+        msg = 'ON'
+
     print ("msg: "+msg)
 
     if mac in MACS:
@@ -88,14 +94,20 @@ def gen():
     print("battery: "+ battery)
     topik = "myStrom/wifi_buttons/"+item+"_"+mac+"/"+event
     #print ("topic: " + topik)
+    conn.publish(topik, msg)
     if action != "6":
-        con.publish(topik,msg,False)
-        conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery",payload=battery,remain=True )
-        if action != "5":
+        conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery", payload=battery,retain=True )   
+        if action == "5":
+            LEVEL[mac] += int(msg)
+            if LEVEL[mac] > LEVEL_MAX[mac]:
+                LEVEL[mac] = LEVEL_MAX[mac]
+            elif LEVEL[mac] < LEVEL_MIN[mac]:
+                LEVEL[mac] = LEVEL_MIN[mac]
+            conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/level", payload=LEVEL[mac],retain=True )
+        else:
             time.sleep(1)
             conn.publish(topik, 'OFF')
-    else:
-        conn.publish(topik,msg,True)
+
     print("################### END ################### ") 
     return "Ok"
     
@@ -123,7 +135,7 @@ def publish_discovery_sensor(mac,item,action_name,default_action_value,model,uni
         "value_template":"{{ value  | upper }}"\
         }'
     #Configuration topic: 
-    conn.publish( topic="homeassistant/sensor/"+mac+"_"+action_name+"/config",payload=msg_json,remain=True)
+    conn.publish( topic="homeassistant/sensor/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name , default_action_value )
 
@@ -155,7 +167,7 @@ def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,m
         "off_delay": 1 \
         }'
     #Configuration topic: 
-    conn.publish( topic="homeassistant/binary_sensor/"+mac+"_"+action_name+"/config",payload=msg_json,remain=True)
+    conn.publish(topic="homeassistant/binary_sensor/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name, default_action_value)
     
@@ -164,13 +176,17 @@ def publish_discovery_button_plus( mac,item):
     publish_discovery_button( mac,item,"Button Plus")
     publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap")
     publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync")
-    publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="0",model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
+    publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="",model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
+    publish_discovery_sensor(mac=mac,item=item,action_name="level",default_action_value=LEVEL[mac],model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent")
+    #publish_discovery_sensor(mac,item,action_name,default_action_value,model       ,unit_of_measurement,device_class):
 
 def publish_discovery_button( mac,item,model):
     publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank")
     publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double")
     publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked")
     publish_discovery_sensor(mac=mac,item=item,action_name="battery", default_action_value="",model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60")
+    
+
 
 def publish_discovery():
     for mac in TYPES:
@@ -191,6 +207,14 @@ if __name__ == '__main__':
     try:
         settings = json.loads(data)
 
+        if not 'version' in settings:
+            print("The version of the settings must be specified.")
+            exit(1)
+            
+        if  settings["version"] != 2:
+           print('Please update the settings file to the version 2')
+           exit(1) 
+
         # users
 #        for user in settings["http"]["valid_users"]:
 #            VALID_USERS[user] = settings["http"]["valid_users"][user]
@@ -201,10 +225,13 @@ if __name__ == '__main__':
 
 
         for mac in settings["mystrom"]["button"]:
-            MACS[mac.upper()] =  settings["mystrom"]["button"][mac]
+            MACS[mac.upper()] =  settings["mystrom"]["button"][mac]["name"]
             TYPES[mac.upper()] =  "button"
         for mac in settings["mystrom"]["button+"]:
-            MACS[mac.upper()] =  settings["mystrom"]["button+"][mac]
+            MACS[mac.upper()] =  settings["mystrom"]["button+"][mac]["name"]
+            LEVEL_MIN[mac.upper()] = settings["mystrom"]["button+"][mac]["level_min"]
+            LEVEL_MAX[mac.upper()] = settings["mystrom"]["button+"][mac]["level_max"]
+            LEVEL[mac.upper()] = settings["mystrom"]["button+"][mac]["level"]
             TYPES[mac.upper()] =  "button+"
 
         for subscribed_topic in settings["mqtt"]["subscribed_topics"]:
