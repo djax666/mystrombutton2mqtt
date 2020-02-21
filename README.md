@@ -100,6 +100,25 @@ Update and rename the "resources/settings.json.sample" into "resources/settings.
 
 Please add the __\[BUTTON_MAC\]__ and a short uniq name of your choice __\[CHOOSEN_NAME\]__ in the section "button" or "buttons+" of the file "resources/settings.json". Personnally I have chosen the color of the rubber band as __\[CHOOSEN_NAME\]__.
 
+```json
+"button":{
+		"123456789ABC" : {"name":"green"},
+		"0123456789AB" : {"name":"orange"},
+        "[BUTTON_MAC]" : {"name":"[CHOOSEN_NAME]"}
+   },
+```
+
+For a button plus, you have to set the initial level __\[LEVEL\]__ (as integer), the minimum __\[LEVEL_MIN\]__ (as integer) and the maximum __\[LEVEL_MAX\]__ (as integer). The __\[LEVEL\]__ is controlled by the "wheel" event which is a difference between -127 and +127.
+It will increase to the __\[LEVEL_MAX\]__ and decrease to the __\[LEVEL_MIN\]__.
+
+```json
+   "button+":{
+		"3423456789AB" : {"name":"plus 1", "level_min": 0 , "level_max":255, "level":0},
+        "[BUTTON_MAC]" : {"name":"[CHOOSEN_NAME]", "level_min": [LEVEL_MIN] , "level_max": [LEVEL_MAX], "level": [LEVEL]}
+   }
+```
+
+
 ## Running
 
 Start the gateway with the command:
@@ -122,6 +141,7 @@ homeassistant/binary_sensor/[BUTTON_MAC]_long/config
 # only if it's a "Button Plus"
 homeassistant/binary_sensor/[BUTTON_MAC]_touch/config  
 homeassistant/binary_sensor/[BUTTON_MAC]_final_wheel/config  
+homeassistant/binary_sensor/[BUTTON_MAC]_level/config  
 ## The state topics
 ## ----------------
 myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/single
@@ -132,6 +152,7 @@ myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/battery
 myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/touch
 myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/wheel
 myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/wheel_final
+myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/level
 ```
 
 ### On Home Assistant
