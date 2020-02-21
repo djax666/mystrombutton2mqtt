@@ -186,7 +186,7 @@ Type=idle
 User=pi
 WorkingDirectory=[DIRECTORY_PATH]
 ExecStart=/usr/bin/python3 [DIRECTORY_PATH]/mystrombutton2mqtt.py [DIRECTORY_PATH]/resources/settings.json
-
+KillSignal=SIGINT
 Restart=always
 
 [Install]
