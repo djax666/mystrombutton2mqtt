@@ -1,6 +1,6 @@
 {
   "comment": "Config file for myStrom Wifi Button 2 MQTT",
-
+  "version": 2,
   "mqtt": {
     "brokeraddress": "192.168.0.4",
     "brokerport": 1883,
