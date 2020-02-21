@@ -2,8 +2,14 @@ from flask import Flask, request, Response,  render_template
 from functools import wraps
 import ssl
 import time
+
+import logging
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.DEBUG)
+
 import mqttlib
 import json.decoder
+import os
+from os import path
 import fileinput
 
 app = Flask(__name__)
@@ -60,38 +66,37 @@ def root():
 @app.route('/api/mystrom/gen')
 def gen():
 
-    print("################### START ###################") 
+    logging.debug("################### START ###################") 
     if request.method != 'GET':
         return ("Err (not a GET method")
-
 
     event=None
     msg = ''
     mac= request.args['mac']
-    print ("mac: "+ mac)
+    logging.debug ("mac: "+ mac)
     action= request.args['action']
-    print ("action: "+ action)
+    logging.debug ("action: "+ action)
     if action in ACTIONS:
         event = ACTIONS.get(action)
 
-    print ("event: "+ event)
+    logging.debug ("event: "+ event)
 
     if action == "5" and 'wheel' in request.args:
         msg = request.args['wheel']
     else:
         msg = 'ON'
 
-    print ("msg: "+msg)
+    logging.debug ("msg: "+msg)
 
     if mac in MACS:
         item= MACS.get(mac)
     else:
         item= 'unknown'
-    print ("item: "+item)
+    logging.debug ("item: "+item)
 
     battery = request.args['battery']
 
-    print("battery: "+ battery)
+    logging.debug("battery: "+ battery)
     topik = "myStrom/wifi_buttons/"+item+"_"+mac+"/"+event
     #print ("topic: " + topik)
     conn.publish(topik, msg)
@@ -108,7 +113,7 @@ def gen():
             time.sleep(1)
             conn.publish(topik, 'OFF')
 
-    print("################### END ################### ") 
+    logging.debug("################### END ################### ") 
     return "Ok"
     
 
@@ -177,23 +182,23 @@ def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,m
     conn.publish(topic="homeassistant/binary_sensor/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name, default_action_value)
-    
 
 def publish_discovery_button_plus( mac,item):
     publish_discovery_button( mac,item,"Button Plus")
     publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap")
     publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync")
-    publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="",model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
-    publish_discovery_sensor(mac=mac,item=item,action_name="level",default_action_value=LEVEL[mac],model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent")
-    #publish_discovery_sensor(mac,item,action_name,default_action_value,model       ,unit_of_measurement,device_class):
+    publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="0",\
+        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
+    publish_discovery_sensor(mac=mac,item=item,action_name="level",default_action_value=LEVEL[mac],\
+        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent")
+
 
 def publish_discovery_button( mac,item,model):
     publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank")
     publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double")
     publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked")
-    publish_discovery_sensor(mac=mac,item=item,action_name="battery", default_action_value="",model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60")
-    
-
+    publish_discovery_sensor(mac=mac,item=item,action_name="battery", default_action_value="",\
+        model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60")
 
 def publish_discovery():
     for mac in TYPES:
@@ -210,6 +215,7 @@ if __name__ == '__main__':
         data = data + line
 
     settings = None
+    levels_json_path = "./resources/levels.json"
 
     try:
         settings = json.loads(data)
@@ -234,11 +240,18 @@ if __name__ == '__main__':
         for mac in settings["mystrom"]["button"]:
             MACS[mac.upper()] =  settings["mystrom"]["button"][mac]["name"]
             TYPES[mac.upper()] =  "button"
+        
+
+        if os.path.exists(levels_json_path) and os.path.isfile(levels_json_path):
+            with open(levels_json_path) as json_file:
+                LEVEL = json.load(json_file)
+
         for mac in settings["mystrom"]["button+"]:
             MACS[mac.upper()] =  settings["mystrom"]["button+"][mac]["name"]
             LEVEL_MIN[mac.upper()] = settings["mystrom"]["button+"][mac]["level_min"]
             LEVEL_MAX[mac.upper()] = settings["mystrom"]["button+"][mac]["level_max"]
-            LEVEL[mac.upper()] = settings["mystrom"]["button+"][mac]["level"]
+            if LEVEL[mac.upper()] == None:
+                LEVEL[mac.upper()] = settings["mystrom"]["button+"][mac]["level"]
             TYPES[mac.upper()] =  "button+"
 
         for subscribed_topic in settings["mqtt"]["subscribed_topics"]:
@@ -254,9 +267,6 @@ if __name__ == '__main__':
     else:
         context = None
 
-
-    
-
     VALID_EVENTS = [ "single",   "double",   "long",   "touch",   "wheel",   "wheel_final"]
     ACTIONS= {
         "1"  : "single",
@@ -267,15 +277,20 @@ if __name__ == '__main__':
         "11" : "wheel_final",
         "6"  : "battery"
     }
-    print ("Action Map:")
-    print (ACTIONS)
-    print ("MAC Map:")
-    print (MACS)
+
     conn = mqttlib.MqttConnection(settings["mqtt"], mqtt_message_callback)
 
     conn.connect()
-    print ("Publish discovery topics")
+    logging.debug ("Publish discovery topics")
     publish_discovery()
 
     app.run(ssl_context=context, port=settings["http"]["port"], host='0.0.0.0')
+
     conn.disconnect()
+
+    with open(levels_json_path, 'w') as outfile:
+        json.dump(LEVEL, outfile)
+        logging.debug( "Levels written on:" + levels_json_path)
+
+    logging.debug( "Clean exit!!! Bye...")
+    
