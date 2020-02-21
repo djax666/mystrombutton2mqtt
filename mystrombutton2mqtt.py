@@ -91,6 +91,9 @@ def gen():
     if action != "6":
         con.publish(topik,msg,False)
         conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery",payload=battery,remain=True )
+        if action != "5":
+            time.sleep(1)
+            conn.publish(topik, 'OFF')
     else:
         conn.publish(topik,msg,True)
     print("################### END ################### ") 
