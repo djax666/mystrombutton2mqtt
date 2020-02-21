@@ -119,8 +119,11 @@ def publish_discovery_sensor(mac,item,action_name,default_action_value,model,uni
     else:
         device_class_template='"device_class": "'+device_class+'",'
 
+    icon_template='"ic":"'+icon+'",'
+    
     msg_json = '{ \
         "name": "myStrom Wifi Button '+item+' ('+mac+') '+action_name+'", \
+        '+ icon_template +'\
         "uniq_id" : "'+mac+'_'+action_name+'",\
         '+ device_class_template +' \
         "unit_of_measurement":"'+unit_of_measurement+'",\
@@ -150,8 +153,12 @@ def nice_macaddress(mac):
 # publish a Home Assistant Binary_Sensor Discory topic
 def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,model,icon):
     
+
+    icon_template='"ic":"'+icon+'",'
+
     msg_json = '{ \
         "name": "myStrom Wifi Button '+item+' ('+mac+') '+action_name+'", \
+        '+ icon_template +'\
         "uniq_id" : "'+mac+'_'+action_name+'",\
         "device": {\
             "identifiers": ["'+mac+'"],"connections":[["mac","'+nice_macaddress(mac)+'"]],\
