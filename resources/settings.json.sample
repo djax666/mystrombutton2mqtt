@@ -21,10 +21,12 @@
   },
  "mystrom": {
    "button":{
-		"123456789ABC" : "green",
-		"0123456789AB" : "orange"
+		"123456789ABC" : {"name":"green"},
+		"0123456789AB" : {"name":"orange"}
    },
-   "button+":{}
+   "button+":{
+		"3423456789AB" : {"name":"plus", "level_min": 0 , "level_max":255, "level":0}
+   }
    
  },
   "http" : {
