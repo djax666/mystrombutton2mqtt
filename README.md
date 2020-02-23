@@ -134,6 +134,7 @@ The following topics for each button will be published:
 homeassistant/sensor/[BUTTON_MAC]_battery/config
 # only if it's a "Button Plus"
 homeassistant/sensor/[BUTTON_MAC]_wheel/config  
+homeassistant/sensor/[BUTTON_MAC]_level/config  
 
 homeassistant/binary_sensor/[BUTTON_MAC]_single/config 
 homeassistant/binary_sensor/[BUTTON_MAC]_double/config 
