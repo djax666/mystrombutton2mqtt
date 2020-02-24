@@ -98,8 +98,13 @@ def gen():
 
     logging.debug("battery: "+ battery)
     topik = "myStrom/wifi_buttons/"+item+"_"+mac+"/"+event
+    if action == "6":
+        retain = True
+    else:
+        retain = False
+
     #print ("topic: " + topik)
-    conn.publish(topik, msg)
+    conn.publish(topic=topik, payload=msg, retain=retain)
     if action != "6":
         conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery", payload=battery,retain=True )   
         if action == "5":
