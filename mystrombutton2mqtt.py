@@ -65,7 +65,7 @@ def root():
     
 @app.route('/api/mystrom/gen')
 def gen():
-
+    """ receive an generic event from a button and publish it on the MQTT Broker """
     logging.debug("################### START ###################") 
     if request.method != 'GET':
         return ("Err (not a GET method")
@@ -115,10 +115,9 @@ def gen():
 
     logging.debug("################### END ################### ") 
     return "Ok"
-    
 
-# publish a Home Assistant Sensor Discory topic
 def publish_discovery_sensor(mac,item,action_name,default_action_value,model,unit_of_measurement,device_class,icon):
+    """ publish a Home Assistant Sensor Discory topic """
     if device_class =="None":
         device_class_template =''
     else:
@@ -147,17 +146,16 @@ def publish_discovery_sensor(mac,item,action_name,default_action_value,model,uni
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name , default_action_value )
 
-
-# MAc address in shape 01:23:45:67:AB
 def nice_macaddress(mac):
+    """ MAc address in shape 01:23:45:67:AB """
     text = mac.replace('.', '').replace('-','').upper()   # a little pre-processing
     # chunk into groups of 2 and re-join
     out = ':'.join([text[i : i + 2] for i in range(0, len(text), 2)])  
     return out
 
-# publish a Home Assistant Binary_Sensor Discory topic
+
 def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,model,icon):
-    
+    """ publish a Home Assistant Binary_Sensor Discory topic """
 
     icon_template='"ic":"'+icon+'",'
 
@@ -184,6 +182,7 @@ def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,m
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name, default_action_value)
 
 def publish_discovery_button_plus( mac,item):
+    """ publish Home Assistant Discory topics for a button plus """
     publish_discovery_button( mac,item,"Button Plus")
     publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap")
     publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync")
@@ -193,7 +192,8 @@ def publish_discovery_button_plus( mac,item):
         model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent")
 
 
-def publish_discovery_button( mac,item,model):
+def publish_discovery_button( mac,item,model):    
+    """ publish Home Assistant Discory topics for a button """
     publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank")
     publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double")
     publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked")
@@ -201,6 +201,7 @@ def publish_discovery_button( mac,item,model):
         model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60")
 
 def publish_discovery():
+    """ publish Home Assistant Discory topics for every button plus and every button """
     for mac in TYPES:
         if TYPES[mac] == "button":
             publish_discovery_button(mac, MACS[mac],"Button")
@@ -229,8 +230,8 @@ if __name__ == '__main__':
            exit(1) 
 
         # users
-#        for user in settings["http"]["valid_users"]:
-#            VALID_USERS[user] = settings["http"]["valid_users"][user]
+        # for user in settings["http"]["valid_users"]:
+        #     VALID_USERS[user] = settings["http"]["valid_users"][user]
 
         # topics
         for topic in settings["mqtt"]["valid_topics"]:
