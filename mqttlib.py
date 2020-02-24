@@ -57,9 +57,9 @@ class MqttConnection(object):
         self._mqttc.loop_stop(True)
         logging.debug('MQTTClient disconnected')
 
-    def publish(self, topic, payload=None, remain=False):
-        logging.info('MqttConnection.publish(%s, %s)' % (str(topic), str(payload)))
-        a, b = self._mqttc.publish(topic, payload,remain)
+    def publish(self, topic, payload=None,retain=False):
+        logging.info('MqttConnection.publish(%s, %s) Retain: %s' % (str(topic), str(payload), str(retain)))
+        a, b = self._mqttc.publish(topic=topic, payload=payload,retain=retain)
         return a == mqtt.MQTT_ERR_SUCCESS
 
     def subscribe(self, topic):
