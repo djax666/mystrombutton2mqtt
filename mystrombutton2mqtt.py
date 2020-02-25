@@ -71,7 +71,6 @@ def gen():
         return ("Err (not a GET method")
 
     event=None
-    msg = ''
     mac= request.args['mac']
     logging.debug ("mac: "+ mac)
     action= request.args['action']
@@ -81,13 +80,6 @@ def gen():
 
     logging.debug ("event: "+ event)
 
-    if action == "5" and 'wheel' in request.args:
-        msg = request.args['wheel']
-    else:
-        msg = 'ON'
-
-    logging.debug ("msg: "+msg)
-
     if mac in MACS:
         item= MACS.get(mac)
     else:
@@ -96,28 +88,35 @@ def gen():
 
     battery = request.args['battery']
 
-    logging.debug("battery: "+ battery)
-    topik = "myStrom/wifi_buttons/"+item+"_"+mac+"/"+event
-    if action == "6":
-        retain = True
-    else:
-        retain = False
-
-    #print ("topic: " + topik)
-    conn.publish(topic=topik, payload=msg, retain=retain)
-    if action != "6":
-        conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery", payload=battery,retain=True )   
-        if action == "5":
-            LEVEL[mac] += int(msg)
-            if LEVEL[mac] > LEVEL_MAX[mac]:
-                LEVEL[mac] = LEVEL_MAX[mac]
-            elif LEVEL[mac] < LEVEL_MIN[mac]:
-                LEVEL[mac] = LEVEL_MIN[mac]
-            conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/level", payload=LEVEL[mac],retain=True )
-        else:
-            time.sleep(1)
-            conn.publish(topik, 'OFF')
-
+    if action == "5" and 'wheel' in request.args: 
+        # if it's "wheel" event
+        wheel = request.args['wheel']
+        LEVEL[mac] += int(wheel)
+        if LEVEL[mac] > LEVEL_MAX[mac]:
+            LEVEL[mac] = LEVEL_MAX[mac]
+        if LEVEL[mac] < LEVEL_MIN[mac]:
+            LEVEL[mac] = LEVEL_MIN[mac]
+        
+        conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/wheel", payload=wheel     ,retain=False )
+        conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/level", payload=LEVEL[mac],retain=True  )
+        conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery", payload=battery ,retain=True  )  
+    elif action == "6": 
+        # if it's the heartbeat action
+        conn.publish( topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery", payload=battery,retain=True )  
+    else: 
+        # if it's the other events (nor heartbeat, nor wheel)
+        conn.publish(topic="myStrom/wifi_buttons/"+item+"_"+mac+"/battery", payload=battery,retain=True ) 
+        topic = "myStrom/wifi_buttons/"+item+"_"+mac+"/"+event
+        conn.publish(topic=topic, payload='ON', retain=False)
+        # reset the event to "OFF" that is needed because HA automation is triggered by a change of state
+        # normally the MQTT configuration variable "off_delay" should do that, but seems to have been cancelled on 15th of Nov 2018:
+        # - https://community.home-assistant.io/t/mqtt-button-automations-issues/80893/16.
+        # - https://github.com/home-assistant/home-assistant/pull/18389
+        # but it's still in the doc in 2020. Why??? https://www.home-assistant.io/integrations/binary_sensor.mqtt/#off_delay
+        #  
+        time.sleep(1) 
+        conn.publish(topic=topic, payload='OFF', retain=False) 
+        
     logging.debug("################### END ################### ") 
     return "Ok"
 
@@ -130,24 +129,21 @@ def publish_discovery_sensor(mac,item,action_name,default_action_value,model,uni
 
     icon_template='"ic":"'+icon+'",'
     
-    msg_json = '{ \
-        "name": "myStrom Wifi Button '+item+' ('+mac+') '+action_name+'", \
-        '+ icon_template +'\
-        "uniq_id" : "'+mac+'_'+action_name+'",\
-        '+ device_class_template +' \
-        "unit_of_measurement":"'+unit_of_measurement+'",\
-        "device": {\
-            "identifiers": ["'+mac+'"],"connections":[["mac","'+nice_macaddress(mac)+'"]],\
-            "model" : "'+model+'",\
-            "name":"Wifi Button '+item+'",\
-            "manufacturer":"myStrom AG"\
-        }, \
-        "~":"myStrom/wifi_buttons/'+item+"_"+mac+'/",\
-        "state_topic": "~'+action_name+'",\
-        "value_template":"{{ value  | upper }}"\
-        }'
+    msg_json = '{"name": "myStrom Wifi Button '+item+' ('+mac+') '+action_name+'", \
+'+ icon_template +'\
+'+ device_class_template +' \
+"uniq_id" : "'+mac+'_'+action_name+'",\
+"unit_of_measurement":"'+unit_of_measurement+'",\
+"device": {\
+"identifiers": ["'+mac+'"],"connections":[["mac","'+nice_macaddress(mac)+'"]],\
+"model" : "'+model+'",\
+"name":"Wifi Button '+item+'",\
+"manufacturer":"myStrom AG"}, \
+"~":"myStrom/wifi_buttons/'+item+"_"+mac+'/",\
+"state_topic": "~'+action_name+'",\
+"value_template":"{{ value  | upper }}"}'
     #Configuration topic: 
-    conn.publish( topic="homeassistant/sensor/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
+    conn.publish( topic="homeassistant/sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name , default_action_value )
 
@@ -164,25 +160,23 @@ def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,m
 
     icon_template='"ic":"'+icon+'",'
 
-    msg_json = '{ \
-        "name": "myStrom Wifi Button '+item+' ('+mac+') '+action_name+'", \
-        '+ icon_template +'\
-        "uniq_id" : "'+mac+'_'+action_name+'",\
-        "device": {\
-            "identifiers": ["'+mac+'"],"connections":[["mac","'+nice_macaddress(mac)+'"]],\
-            "model" : "'+model+'",\
-            "name":"Wifi Button '+item+'",\
-            "manufacturer":"myStrom AG"\
-        }, \
-        "~":"myStrom/wifi_buttons/'+item+"_"+mac+'/",\
-        "state_topic": "~'+action_name+'",\
-        "value_template":"{{ value  | upper }}",\
-        "payload_on":"ON",\
-        "payload_off":"OFF",\
-        "off_delay": 1 \
-        }'
+    msg_json = '{"name": "myStrom Wifi Button '+item+' ('+mac+') '+action_name+'", \
+ '+ icon_template +'\
+"uniq_id" : "'+mac+'_'+action_name+'",\
+"device": {\
+"identifiers": ["'+mac+'"],"connections":[["mac","'+nice_macaddress(mac)+'"]],\
+"model" : "'+model+'",\
+"name":"Wifi Button '+item+'",\
+"manufacturer":"myStrom AG"\
+}, \
+"~":"myStrom/wifi_buttons/'+item+"_"+mac+'/",\
+"state_topic": "~'+action_name+'",\
+"value_template":"{{ value  | upper }}",\
+"payload_on":"ON",\
+ "payload_off":"OFF",\
+ "off_delay": 1 }'
     #Configuration topic: 
-    conn.publish(topic="homeassistant/binary_sensor/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
+    conn.publish(topic="homeassistant/binary_sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name, default_action_value)
 
