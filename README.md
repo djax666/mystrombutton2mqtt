@@ -131,18 +131,18 @@ The following topics for each button will be published:
 ```python
 ## The Discovery Topics
 ## --------------------
-homeassistant/sensor/[BUTTON_MAC]_battery/config
+homeassistant/sensor/myStrom/[BUTTON_MAC]_battery/config
 # only if it's a "Button Plus"
-homeassistant/sensor/[BUTTON_MAC]_wheel/config  
-homeassistant/sensor/[BUTTON_MAC]_level/config  
+homeassistant/sensor/myStrom/[BUTTON_MAC]_wheel/config  
+homeassistant/sensor/myStrom/[BUTTON_MAC]_level/config  
 
-homeassistant/binary_sensor/[BUTTON_MAC]_single/config 
-homeassistant/binary_sensor/[BUTTON_MAC]_double/config 
-homeassistant/binary_sensor/[BUTTON_MAC]_long/config
+homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_single/config 
+homeassistant/binary_sensor//myStrom/[BUTTON_MAC]_double/config 
+homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_long/config
 # only if it's a "Button Plus"
-homeassistant/binary_sensor/[BUTTON_MAC]_touch/config  
-homeassistant/binary_sensor/[BUTTON_MAC]_final_wheel/config  
-homeassistant/binary_sensor/[BUTTON_MAC]_level/config  
+homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_touch/config  
+homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_final_wheel/config  
+homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_level/config  
 ## The state topics
 ## ----------------
 myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/single
