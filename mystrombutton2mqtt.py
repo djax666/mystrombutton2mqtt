@@ -120,14 +120,14 @@ def gen():
     logging.debug("################### END ################### ") 
     return "Ok"
 
-def publish_discovery_sensor(mac,item,action_name,default_action_value,model,unit_of_measurement,device_class,icon):
+def publish_discovery_sensor(mac,item,action_name,default_action_value,model,unit_of_measurement,device_class,icon,retain=False):
     """ publish a Home Assistant Sensor Discory topic """
     if device_class =="None":
         device_class_template =''
     else:
         device_class_template='"device_class": "'+device_class+'",'
 
-    icon_template='"ic":"'+icon+'",'
+    icon_template= '' #'"ic":"'+icon+'",'
     
     msg_json = '{"name": "myStrom Wifi Button '+item+' ('+mac+') '+action_name+'", \
 '+ icon_template +'\
@@ -145,7 +145,7 @@ def publish_discovery_sensor(mac,item,action_name,default_action_value,model,uni
     #Configuration topic: 
     conn.publish( topic="homeassistant/sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
-    conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name , default_action_value )
+    conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name , default_action_value,retain=retain )
 
 def nice_macaddress(mac):
     """ MAc address in shape 01:23:45:67:AB """
@@ -158,7 +158,7 @@ def nice_macaddress(mac):
 def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,model,icon):
     """ publish a Home Assistant Binary_Sensor Discory topic """
 
-    icon_template='"ic":"'+icon+'",'
+    icon_template= '' #'"ic":"'+icon+'",'
 
     msg_json = '{"name": "myStrom Wifi Button '+item+' ('+mac+') '+action_name+'", \
  '+ icon_template +'\
@@ -188,7 +188,7 @@ def publish_discovery_button_plus( mac,item):
     publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="0",\
         model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
     publish_discovery_sensor(mac=mac,item=item,action_name="level",default_action_value=LEVEL[mac],\
-        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent")
+        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent",retain=True)
 
 
 def publish_discovery_button( mac,item,model):    
@@ -196,8 +196,8 @@ def publish_discovery_button( mac,item,model):
     publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank")
     publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double")
     publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked")
-    publish_discovery_sensor(mac=mac,item=item,action_name="battery", default_action_value="",\
-        model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60")
+    publish_discovery_sensor(mac=mac,item=item,action_name="battery", default_action_value="-1",\
+        model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60",retain=True)
 
 def publish_discovery():
     """ publish Home Assistant Discory topics for every button plus and every button """
