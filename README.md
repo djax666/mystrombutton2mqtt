@@ -206,11 +206,11 @@ Check if it's active:
 sudo systemctl status mystrombutton2mqtt.serviceca
 ```
 
-## Home Assistant automations
+## Home Assistant Automations
 
-![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/automations.png "Wifi Button Automations")
+![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/button_automation.png "Wifi Button Automations")
 
-You can use the __Create automation with device__ UI Generator.
+You can use the __CREATE AUTOMATION WITH DEVICE__ UI Automation Generator.
 
 Under __Do something when...__, the useful choices are: 
 - myStrom Wifi Button __\[CHOOSEN_NAME\]__ (__\[BUTTON_MAC\]__) __single turned on__
@@ -220,8 +220,8 @@ Under __Do something when...__, the useful choices are:
 - myStrom Wifi Button __\[CHOOSEN_NAME\]__ (__\[BUTTON_MAC\]__) __battery battery level changed__
 
 ### Single click sample:
-the __device_id__, __platform__ and __type__ have been added by the UI  Generator.
-Written manually, it would be replaced by: __platform: state__ __to: "on"__
+the __device_id: 240e4c5a16da4b96a45e060b184ed880__, __platform: device__ and __type: turn_on__ have been added by the UI  Automation Generator.
+Written manually, they would be replaced by: __platform: state__ and __to: "on"__
 ```yaml
 - id: 'wibu_gris_single'
   alias: wibu gris - single
