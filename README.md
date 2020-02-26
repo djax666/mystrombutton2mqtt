@@ -169,7 +169,7 @@ Once the gateway started, Home Assistant will show the button(s) in "Configurati
 
 The battery information will be updated after each button action or every 12 hours when the button does a heartbeat.
 
-## mystrombutton2mqtt as a service
+## Running mystrombutton2mqtt as a service
 If you run the gateway on a raspberry pi, you may want to run it as a service. To do so, create a file:
 ```console
 sudo vi  /lib/systemd/system/mystrombutton2mqtt.service
@@ -194,7 +194,7 @@ Restart=always
 WantedBy=multi-user.target
 ```
 Enable the service:
-```bash
+```console
 sudo systemctl enable mystrombutton2mqtt.service
 ```
 Start the service:
@@ -205,6 +205,128 @@ Check if it's active:
 ```console
 sudo systemctl status mystrombutton2mqtt.serviceca
 ```
+
+## Home Assistant automations
+
+![alt text](https://raw.githubusercontent.com/djax666/mystrombutton2mqtt/master/static/automations.png "Wifi Button Automations")
+
+You can use the __Create automation with device__ UI Generator.
+
+Under __Do something when...__, the useful choices are: 
+- myStrom Wifi Button __\[CHOOSEN_NAME\]__ (__\[BUTTON_MAC\]__) __single turned on__
+- myStrom Wifi Button __\[CHOOSEN_NAME\]__ (__\[BUTTON_MAC\]__) __double turned on__
+- myStrom Wifi Button __\[CHOOSEN_NAME\]__ (__\[BUTTON_MAC\]__) __long turned on__
+- myStrom Wifi Button __\[CHOOSEN_NAME\]__ (__\[BUTTON_MAC\]__) __touch turned on__ (Button plus only)
+- myStrom Wifi Button __\[CHOOSEN_NAME\]__ (__\[BUTTON_MAC\]__) __battery battery level changed__
+
+### Single click sample:
+the __device_id__, __platform__ and __type__ have been added by the UI  Generator.
+Written manually, it would be replaced by: __platform: state__ __to: "on"__
+```yaml
+- id: 'wibu_gris_single'
+  alias: wibu gris - single
+  description: ''
+  trigger:
+  - device_id: 240e4c5a16da4b96a45e060b184ed880
+    domain: binary_sensor
+    entity_id: binary_sensor.mystrom_wifi_button_gris_5ccf56789abc_single
+    platform: device
+    type: turned_on
+  condition: []
+  action:
+  - data:
+      message: Click once
+    service: notify.telegram
+```
+### Double click sample:
+```yaml
+- id: 'wibu_gris_double'
+  alias: wibu gris - double
+  description: ''
+  trigger:
+  - device_id: 240e4c5a16da4b96a45e060b184ed880
+    domain: binary_sensor
+    entity_id: binary_sensor.mystrom_wifi_button_gris_5ccf56789abc_double
+    platform: device
+    type: turned_on
+  condition: []
+  action:
+  - data:
+      message: Click twice
+    service: notify.telegram
+```
+### Long click sample:
+```yaml
+- id: 'wibu_gris_long'
+  alias: WiBus gris - Long
+  description: ''
+  trigger:
+  - device_id: 240e4c5a16da4b96a45e060b184ed880
+    domain: binary_sensor
+    entity_id: binary_sensor.mystrom_wifi_button_gris_5ccf56789abc_long
+    platform: device
+    type: turned_on
+  condition: []
+  action:
+  - data:
+      message: Long click
+    service: notify.telegram
+```
+### Battery sample
+For the battery event, as the battery dicovery value is -1, make sure to set  __above : -1__ in the trigger if you want to be notified when to recharge/change the battery:
+```yaml
+- id: 'wibu_gris_battery'
+  alias: WiBu gris - Battery
+  description: ''
+  trigger:
+  - above: -1
+    below: 20
+    device_id: 240e4c5a16da4b96a45e060b184ed880
+    domain: sensor
+    entity_id: sensor.mystrom_wifi_button_gris_5ccf56789abc_battery
+    platform: device
+    type: battery_level
+  condition: []
+  action:
+  - data:
+      message: Please recharge the gray button!!!
+    service: notify.telegram
+```
+
+### Button Plus Touch sample:
+```yaml
+- id: 'wibu_plus_touch'
+  alias: WiBus Plus - Touch
+  description: ''
+  trigger:
+  - device_id: 240e4c5a16da4b96a45e060a184ed880
+    domain: binary_sensor
+    entity_id: binary_sensor.mystrom_wifi_button_plus_5ccf56789aaa_long
+    platform: device
+    type: turned_on
+  condition: []
+  action:
+  - data:
+      message: Long click
+    service: notify.telegram
+```
+### Button Plus Wheel Action sample
+You could use _myStrom Wifi Button plus (__\[BUTTON_MAC\]__) __Wheel final turned on__ _, but the event is fired by the button quite long after the wheel action is finished.
+But if you want a real time action for adjusting the brightness of a light, you can add in your __automations.yaml__:
+```yaml
+- id: wibu_plus_level
+  alias: wibu plus - Level
+  trigger:
+  - entity_id: sensor.mystrom_wifi_button_plus_5ccf56789aaa_level
+    platform: state
+  condition: []
+  action:
+  - data_template:
+      brightness: '{{ states(''sensor.mystrom_wifi_button_plus_5ccf56789aaa_level'')|int }}'
+    entity_id: light.dimmable_bulb
+    service: light.turn_on
+```
+
 ## Postscritum
 You can find the the API doc here: [https://api.mystrom.ch/?version=latest](https://api.mystrom.ch/?version=latest)
 
