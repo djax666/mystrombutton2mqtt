@@ -185,21 +185,21 @@ def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,m
 def publish_discovery_button_plus( mac,item):
     """ publish Home Assistant Discory topics for a button plus """
     publish_discovery_button( mac,item,"Button Plus")
-    publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap")
-    publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync")
+    publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap", PREFIX)
+    publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync", PREFIX)
     publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="0",\
-        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
+        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync",prefix=PREFIX)
     publish_discovery_sensor(mac=mac,item=item,action_name="level",default_action_value=LEVEL[mac],\
-        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent",retain=True)
+        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent",prefix=PREFIX,retain=True)
 
 
 def publish_discovery_button( mac,item,model):    
     """ publish Home Assistant Discory topics for a button """
-    publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank")
-    publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double")
-    publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked")
+    publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank",PREFIX)
+    publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double",PREFIX)
+    publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked",PREFIX)
     publish_discovery_sensor(mac=mac,item=item,action_name="battery", default_action_value="-1",\
-        model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60",retain=True)
+        model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60",prefix=PREFIX,retain=True)
 
 def publish_discovery():
     """ publish Home Assistant Discory topics for every button plus and every button """
