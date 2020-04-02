@@ -327,6 +327,10 @@ But if you want a real time action for adjusting the brightness of a light, you 
     service: light.turn_on
 ```
 
+## Docker
+
+The included `Dockerfile` will build a basic image off `python:3`.  Running `docker-compose up` will build and start the image, and will mount the `resources/settings.json` file.
+
 ## Postscritum
 You can find the the API doc here: [https://api.mystrom.ch/?version=latest](https://api.mystrom.ch/?version=latest)
 
