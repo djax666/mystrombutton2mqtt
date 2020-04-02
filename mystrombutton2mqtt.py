@@ -27,6 +27,8 @@ TYPES = dict()
 
 SUBSCRIBED_TOPICS = dict()
 
+PREFIX = ""
+
 
 def mqtt_message_callback(msg_topic, msg_payload):
     if msg_topic in SUBSCRIBED_TOPICS:
@@ -120,8 +122,8 @@ def gen():
     logging.debug("################### END ################### ") 
     return "Ok"
 
-def publish_discovery_sensor(mac,item,action_name,default_action_value,model,unit_of_measurement,device_class,icon,retain=False):
-    """ publish a Home Assistant Sensor Discory topic """
+def publish_discovery_sensor(mac,item,action_name,default_action_value,model,unit_of_measurement,device_class,icon,prefix, retain=False):
+    """ publish a Home Assistant Sensor Discovery topic """
     if device_class =="None":
         device_class_template =''
     else:
@@ -143,7 +145,7 @@ def publish_discovery_sensor(mac,item,action_name,default_action_value,model,uni
 "state_topic": "~'+action_name+'",\
 "value_template":"{{ value  | upper }}"}'
     #Configuration topic: 
-    conn.publish( topic="homeassistant/sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
+    conn.publish( topic=prefix+"/sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name , default_action_value,retain=retain )
 
@@ -155,8 +157,8 @@ def nice_macaddress(mac):
     return out
 
 
-def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,model,icon):
-    """ publish a Home Assistant Binary_Sensor Discory topic """
+def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,model,icon,prefix):
+    """ publish a Home Assistant Binary_Sensor Discovery topic """
 
     icon_template= '' #'"ic":"'+icon+'",'
 
@@ -176,7 +178,7 @@ def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,m
  "payload_off":"OFF",\
  "off_delay": 1 }'
     #Configuration topic: 
-    conn.publish(topic="homeassistant/binary_sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
+    conn.publish(topic=prefix+"/binary_sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name, default_action_value)
 
@@ -227,7 +229,8 @@ if __name__ == '__main__':
         if  settings["version"] != 2:
            print('Please update the settings file to the version 2')
            exit(1) 
-
+        
+        PREFIX = settings["homeassistant"]["discoveryprefix"]
         # users
         # for user in settings["http"]["valid_users"]:
         #     VALID_USERS[user] = settings["http"]["valid_users"][user]
