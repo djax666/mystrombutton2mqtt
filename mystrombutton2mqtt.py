@@ -226,11 +226,11 @@ if __name__ == '__main__':
             print("The version of the settings must be specified.")
             exit(1)
             
-        if  settings["version"] != 2:
-           print('Please update the settings file to the version 2')
+        if  settings["version"] != 3:
+           print('Please update the settings file to the version 3')
            exit(1) 
         
-        PREFIX = settings["homeassistant"]["discoveryprefix"]
+        PREFIX = settings["mqtt"]["discoveryprefix"]
         # users
         # for user in settings["http"]["valid_users"]:
         #     VALID_USERS[user] = settings["http"]["valid_users"][user]
