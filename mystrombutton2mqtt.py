@@ -27,6 +27,8 @@ TYPES = dict()
 
 SUBSCRIBED_TOPICS = dict()
 
+PREFIX = ""
+
 
 def mqtt_message_callback(msg_topic, msg_payload):
     if msg_topic in SUBSCRIBED_TOPICS:
@@ -120,8 +122,8 @@ def gen():
     logging.debug("################### END ################### ") 
     return "Ok"
 
-def publish_discovery_sensor(mac,item,action_name,default_action_value,model,unit_of_measurement,device_class,icon,retain=False):
-    """ publish a Home Assistant Sensor Discory topic """
+def publish_discovery_sensor(mac,item,action_name,default_action_value,model,unit_of_measurement,device_class,icon,prefix, retain=False):
+    """ publish a Home Assistant Sensor Discovery topic """
     if device_class =="None":
         device_class_template =''
     else:
@@ -143,7 +145,7 @@ def publish_discovery_sensor(mac,item,action_name,default_action_value,model,uni
 "state_topic": "~'+action_name+'",\
 "value_template":"{{ value  | upper }}"}'
     #Configuration topic: 
-    conn.publish( topic="homeassistant/sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
+    conn.publish( topic=prefix+"/sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name , default_action_value,retain=retain )
 
@@ -155,8 +157,8 @@ def nice_macaddress(mac):
     return out
 
 
-def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,model,icon):
-    """ publish a Home Assistant Binary_Sensor Discory topic """
+def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,model,icon,prefix):
+    """ publish a Home Assistant Binary_Sensor Discovery topic """
 
     icon_template= '' #'"ic":"'+icon+'",'
 
@@ -176,28 +178,28 @@ def publish_discovery_binary_sensor( mac,item,action_name,default_action_value,m
  "payload_off":"OFF",\
  "off_delay": 1 }'
     #Configuration topic: 
-    conn.publish(topic="homeassistant/binary_sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
+    conn.publish(topic=prefix+"/binary_sensor/myStrom/"+mac+"_"+action_name+"/config",payload=msg_json,retain=True)
     #State topic: 
     conn.publish("myStrom/wifi_buttons/"+item+"_"+mac+"/"+action_name, default_action_value)
 
 def publish_discovery_button_plus( mac,item):
     """ publish Home Assistant Discory topics for a button plus """
     publish_discovery_button( mac,item,"Button Plus")
-    publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap")
-    publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync")
+    publish_discovery_binary_sensor(mac,item,"touch","OFF","Button Plus","mdi:gesture-tap", PREFIX)
+    publish_discovery_binary_sensor(mac,item,"wheel_final","OFF","Button Plus","mdi:sync", PREFIX)
     publish_discovery_sensor(mac=mac,item=item,action_name="wheel",default_action_value="0",\
-        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync")
+        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:sync",prefix=PREFIX)
     publish_discovery_sensor(mac=mac,item=item,action_name="level",default_action_value=LEVEL[mac],\
-        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent",retain=True)
+        model="Button Plus",unit_of_measurement="",device_class="None",icon="mdi:label-percent",prefix=PREFIX,retain=True)
 
 
 def publish_discovery_button( mac,item,model):    
     """ publish Home Assistant Discory topics for a button """
-    publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank")
-    publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double")
-    publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked")
+    publish_discovery_binary_sensor(mac,item,"single","OFF",model,"mdi:radiobox-blank",PREFIX)
+    publish_discovery_binary_sensor(mac,item,"double","OFF",model,"mdi:circle-double",PREFIX)
+    publish_discovery_binary_sensor(mac,item,"long","OFF",model, "mdi:radiobox-marked",PREFIX)
     publish_discovery_sensor(mac=mac,item=item,action_name="battery", default_action_value="-1",\
-        model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60",retain=True)
+        model=model,unit_of_measurement=" %",device_class="battery",icon="mdi:battery-60",prefix=PREFIX,retain=True)
 
 def publish_discovery():
     """ publish Home Assistant Discory topics for every button plus and every button """
@@ -224,10 +226,11 @@ if __name__ == '__main__':
             print("The version of the settings must be specified.")
             exit(1)
             
-        if  settings["version"] != 2:
-           print('Please update the settings file to the version 2')
+        if  settings["version"] != 3:
+           print('Please update the settings file to the version 3')
            exit(1) 
-
+        
+        PREFIX = settings["mqtt"]["discoveryprefix"]
         # users
         # for user in settings["http"]["valid_users"]:
         #     VALID_USERS[user] = settings["http"]["valid_users"][user]

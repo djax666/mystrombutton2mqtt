@@ -131,18 +131,18 @@ The following topics for each button will be published:
 ```python
 ## The Discovery Topics
 ## --------------------
-homeassistant/sensor/myStrom/[BUTTON_MAC]_battery/config
+[PREFIX]/sensor/myStrom/[BUTTON_MAC]_battery/config
 # only if it's a "Button Plus"
-homeassistant/sensor/myStrom/[BUTTON_MAC]_wheel/config  
-homeassistant/sensor/myStrom/[BUTTON_MAC]_level/config  
+[PREFIX]/sensor/myStrom/[BUTTON_MAC]_wheel/config  
+[PREFIX]/sensor/myStrom/[BUTTON_MAC]_level/config  
 
-homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_single/config 
-homeassistant/binary_sensor//myStrom/[BUTTON_MAC]_double/config 
-homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_long/config
+[PREFIX]/binary_sensor/myStrom/[BUTTON_MAC]_single/config 
+[PREFIX]/binary_sensor//myStrom/[BUTTON_MAC]_double/config 
+[PREFIX]/binary_sensor/myStrom/[BUTTON_MAC]_long/config
 # only if it's a "Button Plus"
-homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_touch/config  
-homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_final_wheel/config  
-homeassistant/binary_sensor/myStrom/[BUTTON_MAC]_level/config  
+[PREFIX]/binary_sensor/myStrom/[BUTTON_MAC]_touch/config  
+[PREFIX]/binary_sensor/myStrom/[BUTTON_MAC]_final_wheel/config  
+[PREFIX]/binary_sensor/myStrom/[BUTTON_MAC]_level/config  
 ## The state topics
 ## ----------------
 myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/single
@@ -155,6 +155,9 @@ myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/wheel
 myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/wheel_final
 myStrom/wifi_buttons/[CHOOSEN_NAME]_[BUTTON_MAC]/level
 ```
+__\[PREFIX\]__ will be the prefix you specify in the ./resources/settings.json
+
+For HomeAssistant, according to the [documentation](https://www.home-assistant.io/docs/mqtt/discovery/#discovery_prefix), the default discovery prefix is __homeassistant__ 
 
 ### On Home Assistant
 On Home Assistant, you should have the same __\[MQTT_BROKER_IP\]__ in your "configuration.yaml":
@@ -205,6 +208,10 @@ Check if it's active:
 ```console
 sudo systemctl status mystrombutton2mqtt.serviceca
 ```
+
+## Running mystrombutton2mqtt with Docker
+
+The included `Dockerfile` will build a basic image off `python:3`.  Running `docker-compose up` will build and start the image, and will mount the `resources/settings.json` file.
 
 ## Home Assistant Automations
 
