@@ -1,12 +1,12 @@
 {
   "comment": "Config file for myStrom Wifi Button 2 MQTT",
-  "version": 2,
+  "version": 3,
   "mqtt": {
     "brokeraddress": "192.168.0.4",
     "brokerport": 1883,
     "brokerusername": "mqtt_user",
     "brokerpassword": "mqtt_pwd",
-
+    "discoveryprefix": "homeassistant",
     "brokerssl": false,
     "cafilepath": "./resources/mqtt_client/ca.crt",
     "certfilepath": "./resources/mqtt_client/client.crt",
