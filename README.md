@@ -206,7 +206,7 @@ sudo systemctl start mystrombutton2mqtt.service
 ```
 Check if it's active:
 ```console
-sudo systemctl status mystrombutton2mqtt.serviceca
+sudo systemctl status mystrombutton2mqtt.service
 ```
 
 ## Running mystrombutton2mqtt with Docker
