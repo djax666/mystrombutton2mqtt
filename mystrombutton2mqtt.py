@@ -249,13 +249,14 @@ if __name__ == '__main__':
             with open(levels_json_path) as json_file:
                 LEVEL = json.load(json_file)
 
-        for mac in settings["mystrom"]["button+"]:
-            MACS[mac.upper()] =  settings["mystrom"]["button+"][mac]["name"]
-            LEVEL_MIN[mac.upper()] = settings["mystrom"]["button+"][mac]["level_min"]
-            LEVEL_MAX[mac.upper()] = settings["mystrom"]["button+"][mac]["level_max"]
-            if LEVEL[mac.upper()] == None:
-                LEVEL[mac.upper()] = settings["mystrom"]["button+"][mac]["level"]
-            TYPES[mac.upper()] =  "button+"
+        if "button+" in settings["mystrom"]:
+            for mac in settings["mystrom"]["button+"] or []:
+              MACS[mac.upper()] =  settings["mystrom"]["button+"][mac]["name"]
+              LEVEL_MIN[mac.upper()] = settings["mystrom"]["button+"][mac]["level_min"]
+              LEVEL_MAX[mac.upper()] = settings["mystrom"]["button+"][mac]["level_max"]
+              if not mac.upper() in LEVEL:
+                  LEVEL[mac.upper()] = settings["mystrom"]["button+"][mac]["level"]
+              TYPES[mac.upper()] =  "button+"
 
         for subscribed_topic in settings["mqtt"]["subscribed_topics"]:
             SUBSCRIBED_TOPICS[subscribed_topic] = b''
